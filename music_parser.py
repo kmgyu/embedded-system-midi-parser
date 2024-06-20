@@ -148,13 +148,13 @@ def parse_music_core_dual(midi_path):
             continue
         # print(e, e.duration.quarterLength )
         if isinstance(e, note.Note):
-            if e.octave <= 4:
+            if e.octave >= 4:
                 core_note = e.pitch.name + str(e.pitch.octave)
                 result.append([[core_note], e.duration.quarterLength])
         elif isinstance(e, chord.Chord):
             sub = []
             for p in e.pitches:
-                if p.octave <= 4:
+                if p.octave >= 4:
                     sub.append([p.name, p.octave])
             if not sub: continue
             sub.sort(key=lambda x: x[1])

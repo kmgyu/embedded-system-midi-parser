@@ -19,29 +19,30 @@ def distribute_tasks(n, tasks):
     
     return buzzers
 
-
-async def avant_song(music_name):
-    global n
-    task = []
+async def avant_song(n, music_name):
+    tasks = []
     muse = parse_music_ultimate(music_name)
     result = distribute_tasks(n, muse)
+    
     for i in range(n):
-        task.append(song(i, result[i]))
-    await asyncio.gather(*task)
+        print("task started", i)
+        tasks.append(song(i, result[i]))
+    await asyncio.gather(*tasks)
+
+
 
 async def song(index, task):
     cur_time = 0
     for hertz, duration, start_time in task:
         await asyncio.sleep(start_time - cur_time)
         cur_time = start_time
-        print(hertz, duration, start_time, start_time - cur_time)
+        print(f"index : {index}, hertz : {hertz}, duration : {duration}, start_time : {start_time}, wait_time : {start_time - cur_time}")
         hamster[index].note(hertz)
         await asyncio.sleep(duration)
         cur_time += duration
         hamster[index].note(0)
 
-# 예시 사용법
-n = 2
+n = 3
 
 file_name = "Summer - Joe Hisaishi"
 
@@ -49,24 +50,9 @@ muse = parse_music_ultimate(file_name)
 result = distribute_tasks(n, muse)
 
 hamster = []  
-for i in range(2):
+for i in range(3):
     hamster.append(Hamster(i))
     hamster[i].tempo(60)
-
-asyncio.run(avant_song(file_name))
-
-# hamster[0].note(Hamster.NOTE_D_2, 1)
-# hamster[0].buzzer(78)
-# hamster[0].buzzer(0)
-
-
-# for i in range(30):
-#     if i == 1:
-#         hamster[0].note(2, 1)
-#     hamster[0].note(i, 1)
-#     print(i)
-# print(Hamster.NOTE_A_2, Hamster.NOTE_D_2)
-# 1
-# 6
-# 13
-# 23 ~ 25
+    
+asyncio.run(avant_song(n, file_name))
+# avant_song2(n, file_name)
