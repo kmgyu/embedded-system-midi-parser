@@ -69,4 +69,4 @@ for i in range(3):
     hamster[i].tempo(60)
 
 
-asyncio.run(avant_song(n, file_name))\
+asyncio.run(avant_song(n, file_name))
