@@ -1,68 +1,67 @@
 from music_parser import *
-from music_extractor import *
-from note import code
 from roboid import *
-from music21 import *
-import numpy as np
+from note import code
 import asyncio
 
-import time
+def distribute_tasks(n, tasks):
+    # n개의 부저 리스트 초기화
+    buzzers = [[] for _ in range(n)]
+    available_time = [0] * n  # 각 부저의 사용 가능 시간 초기화
 
-def note_to_string(note):
-    return note.name + str(note.octave)
-
-
-def avant_song(music_name):
-    muse = parse_music_core_dual(music_name)
-    # print(*muse)
-    # tasks = []
-    for e, duration in muse:
-        asyncio.run(do_song(e, duration))
-        # tasks.append(do_song(e, duration))
-    # await asyncio.gather(*tasks)
+    # 주어진 작업을 시작 시간에 맞춰 부저에 분배
+    for task in tasks:
+        hertz, duration, start_time = task
+        # 가장 먼저 작업을 수행할 수 있는 부저 찾기
+        for i in range(n):
+            if available_time[i] <= start_time:
+                buzzers[i].append(task)
+                available_time[i] = start_time + duration  # 부저의 사용 가능 시간 업데이트
+                break
     
-    
-# 비동기
-async def do_song(c, note_time):
+    return buzzers
+
+async def avant_song(n, music_name):
     tasks = []
-    for i in range( min( len(c), len(hamster) ) ):
-        print(c[i], note_time)
-        notee = code[c[i]]
-        # print(i, notee, note_time)
-        # hamster_note_async(i, notee, note_time)
-        # task = asyncio.create_task(hamster_note_async(i, notee, note_time))
-        # tasks.append(task)
-        tasks.append(hamster_note_async(i, notee, note_time))
+    muse = parse_music_ultimate(music_name)
+    result = distribute_tasks(n, muse)
+    
+    for i in range(n):
+        print("task started", i)
+        for j in range(len(result[i])):
+            tasks.append(song(i, [result[i][j]]))
     await asyncio.gather(*tasks)
 
-async def hamster_note_async(index, note, note_time):
-    # ham1 = Hamster()
-    # ham1.note(note)
-    hamster[index].note(note)
-    await asyncio.sleep(note_time)
-    # hamster[index].note(0)
-    # hamster[index].note(0)
 
+
+async def song(index, task):
+    cur_time = task[0][2]
+    await asyncio.sleep(cur_time)
+    for pitch, duration, start_time in task:
+        await asyncio.sleep(start_time - cur_time)
+        print(f"index : {index}, pitch : {pitch}, duration : {duration}, start_time : {start_time}, wait_time : {start_time - cur_time}")
+        hamster[index].note(code[pitch])
+        await asyncio.sleep(duration)
+        cur_time = start_time + duration
+        hamster[index].note(0)
+
+n = 3
+
+# file_name = "Summer - Joe Hisaishi"
+file_name = "flowerdance - djokawari"
+muse = parse_music_ultimate(file_name)
+result = distribute_tasks(n, muse)
 
 hamster = []  
-for i in range(2):
+for i in range(3):
     hamster.append(Hamster(i))
     hamster[i].tempo(60)
 
-# hamster = Hamster()
-# hamster.tempo(60)
+import time
 
-if __name__ == "__main__":
-    # print(pitch_values())
-    # file_name = "Undertale_-_Megalovania"
-    # file_name = "Undertale_-_Spear_Of_Justice"
-    file_name = "Summer - Joe Hisaishi"
-    # parse_music("./"+file_name+".mid")
-    
-    # for hz in code:
-    #     print(hz)
-    #     do_song(hz, 0.5)
-    # asyncio.run(avant_song(file_name))
-    avant_song(file_name)
-    # parse(file_name)
-    print("heeloo world")
+# print(time.time())
+
+
+asyncio.run(avant_song(n, file_name))
+# avant_song2(n, file_name)
+
+# hamster[0].note(code["E-5"])
