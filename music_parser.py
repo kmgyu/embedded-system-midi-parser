@@ -146,7 +146,6 @@ def parse_music_core_dual(midi_path):
     for e in notes_to_parse:
         if e.offset == cur_offset:
             continue
-        # print(e, e.duration.quarterLength )
         if isinstance(e, note.Note):
             if e.octave >= 4:
                 core_note = e.pitch.name + str(e.pitch.octave)
@@ -165,17 +164,20 @@ def parse_music_core_dual(midi_path):
     return result
 
 def parse_music_ultimate(midi_path):
+    # midi 파일 파싱
+    # 최종 메서드
     midi = converter.parse("./"+midi_path+".mid")
+    # 파싱된 노트들만 가져옴
     notes_to_parse = midi.flat.notes
-    # cur_offset = 0
     
     result = []
     for e in notes_to_parse:
+        # note (한개 음표)인 경우
         if isinstance(e, note.Note):
             core_note = e.pitch.name + str(e.pitch.octave)
             result.append([core_note, e.duration.quarterLength, e.offset])
+        # chord (여러 음표)인 경우
         elif isinstance(e, chord.Chord):
-            # sub = []
             for p in e.pitches:
                 result.append([p.name + str(p.octave), e.duration.quarterLength, e.offset])
     return result
