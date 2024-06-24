@@ -1,5 +1,4 @@
 from music21 import *
-import numpy as np
 
 def parse_music_ultimate(midi_path):
     # midi 파일 파싱

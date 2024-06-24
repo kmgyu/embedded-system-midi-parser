@@ -34,8 +34,6 @@ async def avant_song(n, music_name):
             tasks.append(song(i, [result[i][j]]))
     await asyncio.gather(*tasks)
 
-
-
 async def song(index, task):
     # 원래 리스트로 받아서 해당 인덱스 햄스터가 시간에 맞춰 연주하는 방식인데, 태스크의 길이가 길수록 싱크가 안맞아 하나씩만 넣어주었다.
     # 하나만 받아서 더 짧게 할 수 있지만 이래야 싱크가 맞는다... 도대체 왜???
@@ -64,9 +62,9 @@ muse = parse_music_ultimate(file_name)
 result = distribute_tasks(n, muse)
 
 hamster = []  
-for i in range(3):
-    hamster.append(Hamster(i))
-    hamster[i].tempo(60)
+# for i in range(3):
+#     hamster.append(Hamster(i))
+#     hamster[i].tempo(60)
 
 
-asyncio.run(avant_song(n, file_name))
+# asyncio.run(avant_song(n, file_name))
